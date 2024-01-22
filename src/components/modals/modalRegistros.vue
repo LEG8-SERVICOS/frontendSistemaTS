@@ -19,6 +19,19 @@
                 </v-btn>
             </v-card-title>
             <v-card-text>
+                <v-text-field type="hidden" v-model="registro.criado_por" :value="userId"></v-text-field>
+                <v-snackbar v-model="errorSnackbar" :timeout="timeout" color="error" bottom>
+                    O registro possui inconsistencias ou campos em branco!
+                </v-snackbar>
+
+                <!-- Snackbar de Sucesso -->
+                <v-snackbar v-model="successSnackbar" :timeout="timeout" color="success" bottom>
+                    O registro foi postado com sucesso!
+                </v-snackbar>
+
+                <v-snackbar v-model="warningSnackbar" :timeout="timeout" color="warning" bottom>
+                    A quantidade total não bate com a soma das quantidades! Verifique os campos de quantidade!
+                </v-snackbar>
                 <!-- Conteúdo da modal -->
                 <v-form>
                     <v-row>
@@ -125,8 +138,9 @@
                 </v-form>
             </v-card-text>
             <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn @click="enviarRegistro" color="primary" elevation="7">Enviar</v-btn>
+                <v-btn border @click="enviarRegistro" class="text-none" prepend-icon="mdi-check" variant="text">
+                    Registrar
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -134,43 +148,46 @@
 
 <script>
 import axios from 'axios';
-// import { useToast } from "vue-toastification";
 
 export default {
     data() {
         return {
-            userId: localStorage.getItem("userId"),
+            userId: localStorage.getItem('userId'),
             registro: {
-                titulo: "",
-                local: "",
-                data: "",
-                data_fabricacao: "",
-                fornecedor: "",
-                peca: "",
-                lote: "",
-                codigo: "",
-                defeito: "",
+                titulo: '',
+                local: '',
+                data: '',
+                data_fabricacao: '',
+                fornecedor: '',
+                peca: '',
+                lote: '',
+                codigo: '',
+                defeito: '',
                 quantidade_total: null,
                 aprovados: null,
                 rejeitados: null,
                 retrabalhados: null,
+                criado_por: null,
                 operador_1: null,
                 operador_2: null,
                 operador_3: null,
                 operador_4: null,
-                horario_inicio_1: "",
-                horario_inicio_2: "",
-                horario_inicio_3: "",
-                horario_inicio_4: "",
-                horario_fim_1: "",
-                horario_fim_2: "",
-                horario_fim_3: "",
-                horario_fim_4: "",
-                observacoes: "",
+                horario_inicio_1: '',
+                horario_inicio_2: '',
+                horario_inicio_3: '',
+                horario_inicio_4: '',
+                horario_fim_1: '',
+                horario_fim_2: '',
+                horario_fim_3: '',
+                horario_fim_4: '',
+                observacoes: '',
             },
             operadores: [],
-            toastMessage: "",
+            toastMessage: '',
             modalRegistro: false,
+            errorSnackbar: false,
+            successSnackbar: false,
+            warningSnackbar: false,
         };
     },
     mounted() {
@@ -203,14 +220,12 @@ export default {
                 this.registro;
 
             if (quantidade_total !== aprovados + rejeitados + retrabalhados) {
-                const toast = useToast();
-                toast.warning(
-                    "Quantidades inválidas. A soma dos campos 'Aprovados', 'Rejeitados' e 'Retrabalhados' deve ser igual à 'Quantidade Total'."
-                );
+                this.warningSnackbar = true;
             }
         },
         enviarRegistro() {
-            //     this.verificarQuantidades();
+            this.verificarQuantidades();
+
             this.registro.criado_por = this.userId;
 
             if (this.registro.horario_inicio_2 === '' && this.registro.horario_fim_2 === '') {
@@ -225,17 +240,18 @@ export default {
                 delete this.registro.horario_inicio_4;
                 delete this.registro.horario_fim_4;
             }
+            console.log(this.registro);
             axios
                 .post("http://localhost:8000/registros/", this.registro)
                 .then((response) => {
-                    // const toast = useToast();
-                    alert("Registro postado!");
+                    this.successSnackbar = true;
                     this.modalRegistro = false;
                     setTimeout(() => {
                         window.location.reload();
                     }, 3000);
                 })
                 .catch((error) => {
+                    this.errorSnackbar = true;
                     console.error(error);
                 });
         },

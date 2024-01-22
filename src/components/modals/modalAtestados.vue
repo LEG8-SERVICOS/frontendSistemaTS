@@ -1,4 +1,12 @@
 <template>
+    <v-snackbar v-model="errorSnackbar" :timeout="timeout" color="error" bottom>
+        O atestado possui inconsistencias ou campos em branco!
+    </v-snackbar>
+
+    <!-- Snackbar de Sucesso -->
+    <v-snackbar v-model="successSnackbar" :timeout="timeout" color="success" bottom>
+        O atestado foi postado com sucesso!
+    </v-snackbar>
     <!-- BOTAO MODAL -->
     <button @click="abrirModalAtestado"
         class="inline-flex w-full sm:w-auto px-5 py-3 text-white bg-orange-600 hover:bg-orange-700 focus:bg-orange-700 rounded-md md:ml-6 mb-3">
@@ -52,6 +60,8 @@ export default {
             operadores: [],
             toastMessage: "",
             modalAtestado: false,
+            errorSnackbar: false,
+            successSnackbar: false,
         };
     },
     mounted() {
@@ -82,7 +92,8 @@ export default {
                 .then((response) => {
                     // const toast = useToast();
                     // toast.success(`Atestado postado ao operador!`);
-                    alert('Deu boa')
+                    this.errorSnackbar = false,
+                        this.successSnackbar = true;
                     this.modalAtestado = false;
                     setTimeout(() => {
                         window.location.reload();
@@ -90,6 +101,7 @@ export default {
                 })
                 .catch((error) => {
                     console.error(error);
+                    this.errorSnackbar = true;
                 });
         },
     },

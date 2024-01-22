@@ -28,26 +28,22 @@
     <!-- Coluna da produtividade mensal -->
     <template v-slot:item.produtividade_mensal="{ item }">
       <v-chip :color="getChipColor(item.produtividade_mensal)">
-        {{ item.produtividade_mensal }}
+        {{ (item.produtividade_mensal / 20).toFixed(2) }}%
       </v-chip>
     </template>
 
     <!-- Coluna da produtividade diária -->
     <template v-slot:item.produtividade_diaria="{ item }">
       <v-chip :color="getChipColor(item.produtividade_diaria)">
-        {{ item.produtividade_diaria }}
+        {{ item.produtividade_diaria }}%
       </v-chip>
     </template>
 
     <!-- Coluna da produtividade do dia anterior -->
     <template v-slot:item.produtividade_dia_anterior="{ item }">
       <v-chip :color="getChipColor(item.produtividade_dia_anterior)">
-        {{ item.produtividade_dia_anterior }}
+        {{ item.produtividade_dia_anterior }}%
       </v-chip>
-    </template>
-    <template v-slot:item.acao="{ item }">
-      <ModalEditUsers v-model="isEditModalOpen" />
-      <v-icon @click="deleteUser(item.user_id)">mdi-delete</v-icon>
     </template>
   </v-data-table>
 </template>
@@ -70,7 +66,6 @@ export default {
         { title: 'Produtividade Mensal', value: 'produtividade_mensal' },
         { title: 'Produtividade Diária', value: 'produtividade_diaria' },
         { title: 'Produtividade Dia Anterior', value: 'produtividade_dia_anterior' },
-        { title: 'Ações', value: 'acao', sortable: false },
       ],
       userData: [],
     };
@@ -79,9 +74,9 @@ export default {
     getChipColor(produtividade) {
       if (produtividade >= 0 && produtividade <= 20) {
         return 'red';
-      } else if (produtividade > 20 && produtividade <= 70) {
+      } else if (produtividade > 20.1 && produtividade <= 89) {
         return '#cc9900';
-      } else if (produtividade > 70 && produtividade <= 100) {
+      } else if (produtividade >= 90) {
         return 'green';
       }
     },

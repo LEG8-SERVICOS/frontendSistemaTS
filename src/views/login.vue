@@ -3,6 +3,14 @@
   <img src="../assets/leg8.png" class="hidden md:block lg:hidden" alt="Imagem para dispositivos móveis" />
   <div class="h-screen md:flex">
     <div class="relative overflow-hidden md:flex w-1/2 bg-white i justify-around items-center hidden">
+      <v-snackbar v-model="errorSnackbar" :timeout="timeout" color="error" bottom>
+        Usuario ou senhas incorretos, verifique e tente novamente!
+      </v-snackbar>
+
+      <!-- Snackbar de Sucesso -->
+      <v-snackbar v-model="successSnackbar" :timeout="timeout" color="success" bottom>
+        Login bem-sucedido!
+      </v-snackbar>
       <div>
         <img src="../assets/leg8.png" alt="" />
       </div>
@@ -39,15 +47,15 @@
         <button type="submit" class="block w-full bg-orange-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2">
           Login
         </button>
-        <span class="text-sm ml-2 hover:text-orange-500 cursor-pointer font-extralight">Esqueceu a senha ?</span>
+        <span @click="forgotPassword" class="text-sm ml-2 hover:text-orange-500 cursor-pointer font-extralight">Esqueceu a
+          senha ?</span>
       </form>
     </div>
   </div>
 </template>
   
 <script>
-import axios from "axios";
-import { useAuthStore } from '../store/app';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 
 export default {
   name: "Login",
@@ -55,28 +63,65 @@ export default {
     return {
       username: "",
       password: "",
+      emailForPasswordReset: "",
+      user: "",
+      error: null,
+      errorSnackbar: false,
+      successSnackbar: false,
+      timeout: 6000,
     };
   },
   methods: {
     async login() {
       try {
-        const response = await axios.post("http://localhost:8000/token/", {
-          username: this.username,
-          password: this.password,
-        });
+        const auth = getAuth();
 
-        const accessToken = response.data.access;
-        const username = this.username;
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          this.username,
+          this.password
+        );
 
-        useAuthStore().setToken(accessToken);
-        useAuthStore().setUsername(username);
+        // Sucesso no login
+        const user = userCredential.user;
+        console.log('Usuário logado:', user);
 
-        this.$router.push("/admin/dashboard");
+        localStorage.setItem('photoURL', user.photoURL || '');
+        localStorage.setItem('displayName', user.displayName || '');
+        localStorage.setItem('email', user.email || '');
+        localStorage.setItem('userId', user.uid);
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // Redirecionar para a página de dashboard após o login bem-sucedido
+        this.errorSnackbar = false;
+        this.successSnackbar = true;
+        setTimeout(() => {
+          this.$router.push("/admin/dashboard");
+        }, 1500);
       } catch (error) {
-        this.error = error.response.data.message;
+        this.error = error.message;
+        this.errorSnackbar = true;
+      }
+    },
+    async forgotPassword() {
+      try {
+        const auth = getAuth();
+
+        // Enviar e-mail de redefinição de senha
+        await sendPasswordResetEmail(auth, this.emailForPasswordReset);
+
+        // Exibir Snackbar de sucesso
+        this.errorSnackbar = false;
+        this.successSnackbar = true;
+        setTimeout(() => {
+          this.successSnackbar = false;
+        }, 5000);
+      } catch (error) {
+        // Exibir Snackbar de Erro
+        this.error = error.message;
+        this.errorSnackbar = true;
       }
     },
   },
 };
 </script>
-  

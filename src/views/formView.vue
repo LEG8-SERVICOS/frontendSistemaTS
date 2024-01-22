@@ -3,22 +3,26 @@
 
         <body class="flex bg-gray-100 min-h-screen">
             <sidebarSearch />
-            <div class="flex-grow bg-gray-100 text-gray-800">
-                <headerSearch />
-                <v-container>
-                    <v-col cols="12" sm="6" md="4">
-                        <v-text-field v-model="search" label="Pesquisar Título" outlined class="w-100"></v-text-field>
-                    </v-col>
-                    <v-data-table :headers="headers" :items="filteredRegistros" :items-per-page="13" :dense="true"
-                        item-key="id">
-                        <template v-slot:item.acao="{ item }">
-                            <v-icon @click="editarRegistro(item)" color="primary" dark icon>mdi-pencil</v-icon>
-                            <v-icon @click="deletarRegistro(item.id)" color="red" dark icon>mdi-delete</v-icon>
-                        </template>
+            <v-card flat>
+                <v-card-title class="d-flex align-center pe-2">
+                    <v-icon icon="mdi-video-input-component"></v-icon> &nbsp;
+                    Relatório de Registros Geral
 
-                    </v-data-table>
-                </v-container>
-            </div>
+                    <v-spacer></v-spacer>
+
+                    <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" density="compact"
+                        label="Pesquisar Registro" single-line flat hide-details variant="solo-filled"></v-text-field>
+                </v-card-title>
+
+                <v-divider></v-divider>
+
+                <v-data-table :headers="headers" :items="filteredRegistros" :items-per-page="1" :dense="true" item-key="id">
+                    <template v-slot:item.acao="{ item }">
+                        <v-icon @click="editarRegistro(item)" color="primary" dark icon>mdi-pencil</v-icon>
+                        <v-icon @click="deletarRegistro(item.id)" color="red" dark icon>mdi-delete</v-icon>
+                    </template>
+                </v-data-table>
+            </v-card>
         </body>
 
         <!-- MODAL -->

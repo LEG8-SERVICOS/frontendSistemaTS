@@ -245,12 +245,16 @@
 </template>
   
 <script>
-// import carrosell from '../components/Carrosell.vue';
 import cards from "../components/cards.vue";
-import vuetifyDisableMixin from '../mixin';
+import { useAppStore } from "../store/mixinVuetify.ts";
 
 export default {
-  mixins: [vuetifyDisableMixin],
+  setup() {
+    const appStore = useAppStore();
+
+    appStore.vuetifyEnabled = false;
+  }
+
   components: { cards },
   methods: {
     toggleNav() {
