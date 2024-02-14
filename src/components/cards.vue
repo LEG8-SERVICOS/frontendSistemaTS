@@ -59,39 +59,31 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      dados: [],
+      horasTrabalhadasNoMes: 0,
+      produtividadeMediaDiaria: 0,
+      produtividadeMediaMensal: 0,  
+      apontamentoFaltante: 0
     };
   },
   mounted() {
-    axios.get('http://localhost:8000/apontamento-faltante-por-todos-usuarios/')
-      .then(response => {
-        this.dados = response.data;
-      })
-      .catch(error => {
-        console.error('Erro ao buscar os dados: ', error);
-      });
+    this.getWorkStatistics();
   },
   methods: {
-    calcularTotalHorasTrabalhadasNoMes() {
-      const total = this.dados.reduce((accumulator, item) => accumulator + item.horas_trabalhadas, 0);
-      return total.toFixed(2); // Arredonda para duas casas decimais
-    },
-    calcularSomaTodasHorasTrabalhadas() {
-      const total = this.dados.reduce((accumulator, item) => accumulator + item.horas_trabalhadas, 0);
-      return total.toFixed(2); // Arredonda para duas casas decimais
-    },
-    calcularMediaApontamentoFaltante() {
-      const total = this.dados.reduce((accumulator, item) => accumulator + item.apontamento_faltante, 0);
-      return (total / this.dados.length).toFixed(2); // Arredonda para duas casas decimais
-    },
-    calcularMediaProdutividadeDiaAnterior() {
-      const total = this.dados.reduce((accumulator, item) => accumulator + item.produtividade_dia_anterior, 0);
-      return (total / this.dados.length).toFixed(2); // Arredonda para duas casas decimais
-    },
-    calcularMediaProdutividadeMensal() {
-      const total = this.dados.reduce((accumulator, item) => accumulator + item.produtividade_mensal, 0);
-      return (total / this.dados.length).toFixed(2); // Arredonda para duas casas decimais
-    },
-  },
-};
+    async getWorkStatistics() {
+      try {
+        const response = await axios.get('http://localhost:8080/work-statistics');
+        const data = response.data;
+        
+        // Atualiza os dados na interface
+        this.horasTrabalhadasNoMes = data.horasTrabalhadasPorMes.total;
+        this.produtividadeMediaDiaria = data.produtividadeMediaDiaria;
+        this.produtividadeMediaMensal = data.produtividadeMediaMensal;
+        this.apontamentoFaltante = data.apontamentoFaltante;
+        // Atualize outros dados conforme necessário
+      } catch (error) {
+        console.error('Erro ao obter estatísticas de trabalho:', error);
+      }
+    }
+  }
+}
 </script>

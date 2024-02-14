@@ -23,7 +23,7 @@
               <modalAtestados />
             </div>
           </div>
-          <cards />
+          <!-- <cards /> -->
           <section class="grid md:grid-cols-2 xl:grid-cols-4 xl:grid-rows-3 xl:grid-flow-col gap-6">
             <div
               class="flex flex-col md:col-span-2 md:row-span-2 bg-white shadow rounded-lg sm: overflow-x-auto overflow-y-auto max-h-96">
@@ -69,14 +69,14 @@
 
 <script>
 import axios from 'axios';
-import sidebar from '@/components/sidebar.vue';
-import headerSearch from "@/components/headerSearch.vue";
-import usersProdutivity from "@/components/usersProdutivity.vue";
-import topCampaings from "@/components/TopCampaigns.vue";
-import cards from "@/components/cards.vue";
-import modalRegisters from '@/components/modals/modalRegistros.vue';
-import modalAtestados from '@/components/modals/modalAtestados.vue';
-import tableRecenty from "@/components/tableRecenty.vue";
+import sidebar from '../components/sidebar.vue';
+import headerSearch from "../components/headerSearch.vue";
+import usersProdutivity from "../components/usersProdutivity.vue";
+import topCampaings from "../components/TopCampaigns.vue";
+import cards from "../components/cards.vue";
+import modalRegisters from '../components/modals/modalRegistros.vue';
+import modalAtestados from '../components/modals/modalAtestados.vue';
+import tableRecenty from "../components/tableRecenty.vue";
 
 export default {
   components: {

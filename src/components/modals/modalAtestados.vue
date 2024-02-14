@@ -77,10 +77,12 @@ export default {
 
         carregarOperadores() {
             axios
-                .get("http://localhost:8000/apontamento-faltante-por-todos-usuarios/")
+                .get("http://localhost:8080/users/")
                 .then((response) => {
-                    this.operadores = response.data;
-                    console.log(response.data)
+                    this.operadores = response.data.map(item => ({
+                        user_id: item.uid,
+                        nome_usuario: item.data.email,
+                    }));
                 })
                 .catch((error) => {
                     console.error(error);
@@ -88,7 +90,7 @@ export default {
         },
         enviarAtestado() {
             axios
-                .post("http://localhost:8000/atestados/", this.atestado)
+                .post("http://localhost:8080/attestation/", this.atestado)
                 .then((response) => {
                     // const toast = useToast();
                     // toast.success(`Atestado postado ao operador!`);

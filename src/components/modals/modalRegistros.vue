@@ -203,11 +203,11 @@ export default {
         },
         carregarOperadores() {
             axios
-                .get("http://localhost:8000/apontamento-faltante-por-todos-usuarios/")
+                .get("http://localhost:8080/users/")
                 .then((response) => {
                     this.operadores = response.data.map(item => ({
-                        user_id: item.user_id,
-                        nome_usuario: item.nome_usuario,
+                        user_id: item.uid,
+                        nome_usuario: item.data.email,
                     }));
                 })
                 .catch((error) => {
@@ -215,16 +215,7 @@ export default {
                 });
         },
 
-        verificarQuantidades() {
-            const { quantidade_total, aprovados, rejeitados, retrabalhados } =
-                this.registro;
-
-            if (quantidade_total !== aprovados + rejeitados + retrabalhados) {
-                this.warningSnackbar = true;
-            }
-        },
         enviarRegistro() {
-            this.verificarQuantidades();
 
             this.registro.criado_por = this.userId;
 
@@ -242,7 +233,7 @@ export default {
             }
             console.log(this.registro);
             axios
-                .post("http://localhost:8000/registros/", this.registro)
+                .post("http://localhost:8080/record/", this.registro)
                 .then((response) => {
                     this.successSnackbar = true;
                     this.modalRegistro = false;

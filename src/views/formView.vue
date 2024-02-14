@@ -238,11 +238,10 @@ export default {
     },
     created() {
         this.carregarRegistros();
-        this.carregarOperadores();
     },
     methods: {
         carregarRegistros() {
-            axios.get('http://localhost:8000/registros')
+            axios.get('http://localhost:8080/records')
                 .then((response) => {
                     this.registros = response.data;
                 })
@@ -251,7 +250,7 @@ export default {
                 });
         },
         deletarRegistro(registroId) {
-            axios.delete(`http://localhost:8000/registros/${registroId}`)
+            axios.delete(`http://localhost:8080/records/${registroId}`)
                 .then(() => {
                     this.carregarRegistros();
                 })
@@ -305,41 +304,9 @@ export default {
             this.registro.criado_por = this.userId;
 
             axios
-                .patch(`http://localhost:8000/registros/${this.editingRecordId}/`, this.registro)
+                .patch(`http://localhost:8000/record/${this.editingRecordId}/`, this.registro)
                 .then(() => {
                     alert("Registro atualizado!");
-                    this.resetForm();
-                    this.modalRegistro = false;
-                    this.carregarRegistros();
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        },
-        carregarOperadores() {
-            axios
-                .get("http://localhost:8000/apontamento-faltante-por-todos-usuarios/")
-                .then((response) => {
-                    this.operadores = response.data.map(item => ({
-                        user_id: item.user_id,
-                        nome_usuario: item.nome_usuario,
-                    }));
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        },
-        fecharModalRegistro() {
-            this.resetForm();
-            this.modalRegistro = false;
-        },
-        enviarRegistro() {
-            this.registro.criado_por = this.userId;
-
-            axios
-                .post("http://localhost:8000/registros/", this.registro)
-                .then(() => {
-                    alert("Registro postado!");
                     this.resetForm();
                     this.modalRegistro = false;
                     this.carregarRegistros();
