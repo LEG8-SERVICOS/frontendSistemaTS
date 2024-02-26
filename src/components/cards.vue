@@ -9,8 +9,8 @@
         </svg>
       </div>
       <div>
-        <span class="block text-2xl font-bold">{{ calcularTotalHorasTrabalhadasNoMes() }}h</span>
-        <span class="block text-gray-500">Total de horas trabalhadas no mes (hrs).</span>
+        <span class="block text-2xl font-bold">{{ horasTrabalhadasNoMes }}h</span>
+        <span class="block text-gray-500">Total de horas trabalhadas no mês (hrs).</span>
       </div>
     </div>
     <div class="flex items-center p-8 bg-white shadow rounded-lg">
@@ -21,8 +21,8 @@
         </svg>
       </div>
       <div>
-        <span class="block text-2xl font-bold">{{ calcularMediaProdutividadeMensal() }}%</span>
-        <span class="block text-gray-500">Produtividade média do mes (%).</span>
+        <span class="block text-2xl font-bold">{{ produtividadeMediaDiaria }}%</span>
+        <span class="block text-gray-500">Produtividade média diaria (%).</span>
       </div>
     </div>
     <div class="flex items-center p-8 bg-white shadow rounded-lg">
@@ -33,8 +33,8 @@
         </svg>
       </div>
       <div>
-        <span class="inline-block text-2xl font-bold"> {{ calcularMediaProdutividadeDiaAnterior() }}%</span>
-        <span class="block text-gray-500">Produtividade do dia anterior (%).</span>
+        <span class="inline-block text-2xl font-bold"> {{ produtividadeAnterior }}%</span>
+        <span class="block text-gray-500">Produtividade média do dia anterior (%).</span>
       </div>
     </div>
     <div class="flex items-center p-8 bg-white shadow rounded-lg">
@@ -46,8 +46,8 @@
         </svg>
       </div>
       <div>
-        <span class="block text-2xl font-bold">{{ calcularMediaApontamentoFaltante() }}h</span>
-        <span class="block text-gray-500">Média de Apontamento faltante de funcionário (hrs).</span>
+        <span class="block text-2xl font-bold">{{ apontamentoFaltante }}h</span>
+        <span class="block text-gray-500">Média de apontamento faltante de funcionário (hrs).</span>
       </div>
     </div>
   </section>
@@ -61,7 +61,7 @@ export default {
     return {
       horasTrabalhadasNoMes: 0,
       produtividadeMediaDiaria: 0,
-      produtividadeMediaMensal: 0,  
+      produtividadeAnterior: 0,  
       apontamentoFaltante: 0
     };
   },
@@ -72,13 +72,11 @@ export default {
     async getWorkStatistics() {
       try {
         const response = await axios.get('http://localhost:8080/work-statistics');
-        const data = response.data;
-        
         // Atualiza os dados na interface
-        this.horasTrabalhadasNoMes = data.horasTrabalhadasPorMes.total;
-        this.produtividadeMediaDiaria = data.produtividadeMediaDiaria;
-        this.produtividadeMediaMensal = data.produtividadeMediaMensal;
-        this.apontamentoFaltante = data.apontamentoFaltante;
+        this.horasTrabalhadasNoMes = response.data.totalHorasTrabalhadasMes;
+        this.produtividadeAnterior = response.data.produtividadeDiaAnterior;
+        this.produtividadeMediaDiaria = response.data.produtividadeMediaDiaria;
+        this.apontamentoFaltante = response.data.apontamentoFaltanteMes;
         // Atualize outros dados conforme necessário
       } catch (error) {
         console.error('Erro ao obter estatísticas de trabalho:', error);

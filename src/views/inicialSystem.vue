@@ -23,7 +23,7 @@
               <modalAtestados />
             </div>
           </div>
-          <!-- <cards /> -->
+          <cards />
           <section class="grid md:grid-cols-2 xl:grid-cols-4 xl:grid-rows-3 xl:grid-flow-col gap-6">
             <div
               class="flex flex-col md:col-span-2 md:row-span-2 bg-white shadow rounded-lg sm: overflow-x-auto overflow-y-auto max-h-96">
@@ -104,35 +104,23 @@ export default {
     // Using Promise.all to wait for both requests to complete
     Promise.all([
       this.carregarOperadores(),
-      axios.get('http://localhost:8000/atestados')
+      axios.get('http://localhost:8080/attestations')
         .then(response => {
           this.quantAtestados = response.data.length;
         })
         .catch(error => {
           console.error('Erro ao obter atestados:', error);
         }),
-      axios.get('http://localhost:8000/registros')
+      axios.get('http://localhost:8080/records')
         .then(response => {
           this.quantRegistros = response.data.length;
         })
         .catch(error => {
           console.error('Erro ao obter registros:', error);
         })
-    ]).then(() => {
+    ]).then(() => { 
       this.isLoading = false;
     });
-  },
-  methods: {
-    carregarOperadores() {
-      return axios
-        .get("http://localhost:8000/apontamento-faltante-por-todos-usuarios/")
-        .then((response) => {
-          this.operadores = response.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
   },
 }
 </script>
