@@ -103,7 +103,6 @@ export default {
 
     // Using Promise.all to wait for both requests to complete
     Promise.all([
-      this.carregarOperadores(),
       axios.get('http://localhost:8080/attestations')
         .then(response => {
           this.quantAtestados = response.data.length;

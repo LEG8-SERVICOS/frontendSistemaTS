@@ -1,48 +1,36 @@
 <template>
-  <v-data-table :headers="headers" :items="userData" item-value="user_id" class="elevation-1">
-    <!-- Coluna do usuário -->
-    <template v-slot:item.user_id="{ item }">
-      {{ item.user_id }}
+  <v-data-table :headers="headers" :items="userData" :items-per-page="5" class="elevation-1">
+    <!-- Coluna do Nome do Usuário -->
+    <template v-slot:item.email="{ item }">
+      {{ item.email }}
     </template>
 
-    <!-- Coluna do nome do usuário -->
-    <template v-slot:item.nome_usuario="{ item }">
-      {{ item.nome_usuario }}
+    <!-- Coluna das Horas Mensais -->
+    <template v-slot:item.totalHorasTrabalhadasMes="{ item }">
+      {{ item.totalHorasTrabalhadasMes }}
     </template>
 
-    <!-- Coluna das horas mensais -->
-    <template v-slot:item.horas_mensais="{ item }">
-      {{ item.horas_mensais }}
+    <!-- Coluna do Apontamento Faltante -->
+    <template v-slot:item.horasFaltantesHoje="{ item }">
+      {{ item.horasFaltantesHoje }}
     </template>
 
-    <!-- Coluna do apontamento faltante -->
-    <template v-slot:item.apontamento_faltante="{ item }">
-      {{ item.apontamento_faltante }}
+    <!-- Coluna das Horas Trabalhadas -->
+    <template v-slot:item.totalHorasTrabalhadasHoje="{ item }">
+      {{ item.totalHorasTrabalhadasHoje }}
     </template>
 
-    <!-- Coluna das horas trabalhadas -->
-    <template v-slot:item.horas_trabalhadas="{ item }">
-      {{ item.horas_trabalhadas }}
-    </template>
-
-    <!-- Coluna da produtividade mensal -->
-    <template v-slot:item.produtividade_mensal="{ item }">
-      <v-chip :color="getChipColor(item.produtividade_mensal)">
-        {{ (item.produtividade_mensal / 20).toFixed(2) }}%
+    <!-- Coluna da Produtividade Diária -->
+    <template v-slot:item.produtividadeMediaDiaria="{ item }">
+      <v-chip :color="getProdutividadeChipColor(item.produtividadeMediaDiaria)">
+        {{ item.produtividadeMediaDiaria }}%
       </v-chip>
     </template>
 
-    <!-- Coluna da produtividade diária -->
-    <template v-slot:item.produtividade_diaria="{ item }">
-      <v-chip :color="getChipColor(item.produtividade_diaria)">
-        {{ item.produtividade_diaria }}%
-      </v-chip>
-    </template>
-
-    <!-- Coluna da produtividade do dia anterior -->
-    <template v-slot:item.produtividade_dia_anterior="{ item }">
-      <v-chip :color="getChipColor(item.produtividade_dia_anterior)">
-        {{ item.produtividade_dia_anterior }}%
+    <!-- Coluna da Produtividade do Dia Anterior -->
+    <template v-slot:item.produtividadeDiaAnterior="{ item }">
+      <v-chip :color="getProdutividadeChipColor(item.produtividadeDiaAnterior)">
+        {{ item.produtividadeDiaAnterior }}%
       </v-chip>
     </template>
   </v-data-table>
@@ -50,47 +38,43 @@
 
 <script>
 import axios from 'axios';
-import ModalEditUsers from '@/components/modals/modalEditUsers.vue';
 
 export default {
-  components: {
-    ModalEditUsers,
-  },
   data() {
     return {
-      isEditModalOpen: false,
       headers: [
-        { title: 'Nome do Usuário', value: 'nome_usuario' },
-        { title: 'Horas Diarias', value: 'horas_mensais' },
-        { title: 'Horas Trabalhadas', value: 'horas_trabalhadas' },
-        { title: 'Produtividade Mensal', value: 'produtividade_mensal' },
-        { title: 'Produtividade Diária', value: 'produtividade_diaria' },
-        { title: 'Produtividade Dia Anterior', value: 'produtividade_dia_anterior' },
+        { title: 'Nome do Usuário', value: 'email' },
+        { title: 'Horas Mensais', value: 'totalHorasTrabalhadasMes' },
+        { title: 'Apontamento Faltante diário', value: 'horasFaltantesHoje' },
+        { title: 'Horas Trabalhadas', value: 'totalHorasTrabalhadasHoje' },
+        { title: 'Produtividade Diária', value: 'produtividadeMediaDiaria' },
+        { title: 'Produtividade Dia Anterior', value: 'produtividadeDiaAnterior' },
       ],
       userData: [],
     };
   },
   methods: {
-    getChipColor(produtividade) {
-      if (produtividade >= 0 && produtividade <= 20) {
+    getProdutividadeChipColor(produtividade) {
+      if (produtividade < 50) {
         return 'red';
-      } else if (produtividade > 20.1 && produtividade <= 89) {
-        return '#cc9900';
-      } else if (produtividade >= 90) {
+      } else if (produtividade >= 50 && produtividade <= 90) {
+        return '#cc9900'; // Amarelo
+      } else if (produtividade > 90) {
         return 'green';
       }
     },
+    fetchData() {
+      axios.get('http://localhost:8080/work-statistics-per-user')
+        .then(response => {
+          this.userData = response.data;
+        })
+        .catch(error => {
+          console.error('Erro ao buscar dados: ', error);
+        });
+    },
   },
   mounted() {
-    // Faça uma solicitação HTTP para o endpoint
-    axios.get('http://localhost:8000/apontamento-faltante-por-todos-usuarios/')
-      .then(response => {
-        // Preencha o array userData com os dados retornados
-        this.userData = response.data;
-      })
-      .catch(error => {
-        console.error('Erro ao buscar dados: ', error);
-      });
+    this.fetchData();
   },
 };
 </script>

@@ -250,7 +250,11 @@ export default {
                 });
         },
         deletarRegistro(registroId) {
-            axios.delete(`http://localhost:8080/records/${registroId}`)
+            if (!registroId) {
+                return;
+            }
+
+            firebase.database().ref(`records/${registroId}`).remove()
                 .then(() => {
                     this.carregarRegistros();
                 })
